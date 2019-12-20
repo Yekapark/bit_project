@@ -12,8 +12,6 @@ import java.util.List;
 import java.util.Stack;
 import java.util.stream.Stream;
 
-import javax.lang.model.util.Elements;
-
 import org.ezcode.demo.domain.PageMaker;
 import org.ezcode.demo.domain.ParseVO;
 import org.ezcode.demo.domain.SearchDTO;
@@ -21,8 +19,6 @@ import org.ezcode.demo.service.ParseService;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.Jsoup;
-import org.jsoup.Jsoup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -500,7 +496,6 @@ public class SearchController {
 	public List<ParseVO> crawling(String keyword, String lang) {
 		ParseVO vo = new ParseVO();
 
-		int cnt = 0;
 		String[] ran = {"반복", "포", "조건", "이프"};
 		// String grammers = keyword; // 여기 넣어주면 됨
 		
@@ -559,7 +554,7 @@ public class SearchController {
 
 			org.jsoup.select.Elements element = doc.select(str);
 			for (Element el : element) {
-
+				
 //					System.out.println(el.attr("abs:href"));
 				String url2 = el.attr("abs:href");
 				// log.info("ㅇㄹㅇㄹㅇㄹㅇㄹ " + url2);
@@ -582,7 +577,7 @@ public class SearchController {
 								// log.info("ddddd" + al2.text());
 								vo = new ParseVO();
 				
-								crawlingParse(al2.text(), grammer, vo, lang, url2);
+								crawlingParse(al2.text(), grammer, vo, lang, url2, el.nextElementSibling().text());
 								middle = System.currentTimeMillis();
 								if(middle - start >= 1000) {
 									break;
@@ -596,7 +591,7 @@ public class SearchController {
 							vo = new ParseVO();
 			
 							
-							crawlingParse(el2.text(), grammer, vo, lang, url2);
+							crawlingParse(el2.text(), grammer, vo, lang, url2, el.nextElementSibling().text());
 							middle = System.currentTimeMillis();
 							if(middle - start >= 1000) {
 								break;
@@ -607,7 +602,7 @@ public class SearchController {
 
 			}
 			page += 1;
-		} while (page == 5);
+		} while (page <= 5);
 
 		long end = System.currentTimeMillis() - start;
 		
@@ -618,9 +613,8 @@ public class SearchController {
 		return result;
 	}
 
-	public void crawlingParse(String all, String[] grammer, ParseVO vo, String lang, String url2) {
+	public void crawlingParse(String all, String[] grammer, ParseVO vo, String lang, String url2, String fname) {
 		String str = "";
-		boolean allKeyword = true; // 모든 키워드 찾는 변수
 		boolean keywordOn = false;
 		
 		InputStream is = new ByteArrayInputStream(all.getBytes());
@@ -652,7 +646,7 @@ public class SearchController {
 			for (int i = 1; (line = br.readLine()) != null; i++) {
 				vo = new ParseVO();
 				vo.setComment(0);
-				vo.setFname("tistory");
+				vo.setFname(fname);
 				vo.setLang(lang);
 				vo.setPath(url2);
 				// log.info("" + line);
